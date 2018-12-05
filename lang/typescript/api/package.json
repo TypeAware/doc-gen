@@ -1,0 +1,15 @@
+{
+  "name": "@typeaware/doc-gen.api",
+  "version": "0.0.1001",
+  "description": "API Docs generator for TypeAware",
+  "main": "index.js",
+  "scripts": {
+    "test": "suman test"
+  },
+  "keywords": [
+    "typeaware",
+    "type-aware"
+  ],
+  "author": "Olegzandr VD",
+  "license": "MIT"
+}
