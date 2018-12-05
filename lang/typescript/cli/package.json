@@ -1,0 +1,16 @@
+{
+  "name": "@typeaware/doc-gen.cli",
+  "version": "0.0.1001",
+  "description": "TypeAware CLI types generator",
+  "main": "index.js",
+  "scripts": {
+    "test": "suman test"
+  },
+  "keywords": [
+    "type-aware",
+    "type.aware",
+    "typeaware"
+  ],
+  "author": "Olegzandr VD",
+  "license": "MIT"
+}
