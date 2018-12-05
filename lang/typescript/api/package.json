@@ -11,5 +11,8 @@
     "type-aware"
   ],
   "author": "Olegzandr VD",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@typeaware/doc-gen.cli": "https://raw.githubusercontent.com/typeaware/doc-gen/master/lang/typescript/cli/typeaware-doc-gen.cli-0.0.1001.tgz"
+  }
 }
