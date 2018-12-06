@@ -1,5 +1,5 @@
 {
-  "name": "@typeaware/doc-gen.cli",
+  "name": "@typeaware/docgen.cli",
   "version": "0.0.1001",
   "description": "TypeAware CLI types generator",
   "main": "index.js",

@@ -2,10 +2,11 @@
 
 import chalk from "chalk";
 import * as safe from "@oresoftware/safe-stringify";
-import {RequestHandler} from "express";
 import log from "./logger";
 import * as express from "express";
 import {flattenDeep, HTTPMethods} from "./shared";
+import {RequestHandler} from 'express';
+
 
 export interface Headers {
   [key: string]: string

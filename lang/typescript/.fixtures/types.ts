@@ -1,28 +1,20 @@
 'use strict';
 
 export namespace Entities {
-  
   export namespace Foo {
-    
     export namespace GET {
-      
       export  namespace Basic {
-        
         export class Roop {
         
         }
-        
         export class Req {
-          
           headers: {
             zoomHeader: number
           };
-          
           body: {
             zoomBody: string
           }
         }
-        
         export  class Res {
           headers: {};
           body: {
@@ -37,27 +29,21 @@ export namespace Entities {
     }
     
     export namespace PUT {
-      
-      export  namespace Basic {
-        
+      export namespace Basic {
         export class Req {
           headers: {};
           body: {
             bar: string
           }
         }
-        
-        export  class Res {
+    
+        export class Res {
           headers: {};
           body: {
             foo: number
           }
         }
-        
       }
-      
     }
-    
   }
-  
 }
