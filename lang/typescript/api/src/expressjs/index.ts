@@ -1,9 +1,11 @@
 'use strict';
 
 import * as express from 'express';
-import {DocGen, Route} from "../main";
+import {DocGen} from '../doc-gen';
+import {Route} from "../main";
 import {HTTPMethods, flattenDeep} from "../shared";
 import {RequestHandler} from 'express-serve-static-core';
+import log from "../logger";
 
 type NestedRequestHandler = RequestHandler | Array<RequestHandler> | Array<Array<RequestHandler>>
 
@@ -30,5 +32,20 @@ export class ExpressDocGen extends DocGen {
         (router as any)[v as any](route, ...handlers);
       }
     }
-  };
+  }
+  
+  serve(): RequestHandler {
+    
+    return (req, res, next) => {
+      
+      try {
+        res.json(this.info);
+      }
+      catch (err) {
+        log.error(err);
+        next(err);
+      }
+      
+    }
+  }
 }
