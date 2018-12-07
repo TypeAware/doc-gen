@@ -3,8 +3,8 @@
 import * as express from 'express';
 import {RequestHandler} from 'express';
 // import {DocGen, Entity, RouteMulti} from '../dist/original';
-import {ExpressDocGen} from '../expressjs';
-import {Entity, Route} from '../main';
+import {ExpressDocGen} from '../dist/expressjs';
+import {Entity, Route} from '../dist/main';
 import {Entities} from '../../.fixtures/types';
 import Foo = Entities.Foo;
 

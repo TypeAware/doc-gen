@@ -1,8 +1,13 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+const doc_gen_1 = require("../doc-gen");
 const main_1 = require("../main");
 const shared_1 = require("../shared");
-class ExpressDocGen extends main_1.DocGen {
+const logger_1 = require("../logger");
+class ExpressDocGen extends doc_gen_1.DocGen {
+    constructor() {
+        super();
+    }
     makeAddRoute1(router, entityName) {
         return (methods, route, f) => {
             const r = this.addRoute(methods, route);
@@ -23,6 +28,16 @@ class ExpressDocGen extends main_1.DocGen {
             }
         };
     }
-    ;
+    serve() {
+        return (req, res, next) => {
+            try {
+                res.json(this.internal);
+            }
+            catch (err) {
+                logger_1.default.error(err);
+                next(err);
+            }
+        };
+    }
 }
 exports.ExpressDocGen = ExpressDocGen;

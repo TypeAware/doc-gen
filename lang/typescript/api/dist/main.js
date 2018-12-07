@@ -1,11 +1,20 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const safe = require("@oresoftware/safe-stringify");
-const logger_1 = require("./logger");
 const shared_1 = require("./shared");
 class Route {
     constructor(methods, p, entityName) {
+        this.docParents = [];
         this.methods = methods.slice(0);
+        this.internal = {
+            responseBodyType: '',
+            requestBodyType: ''
+        };
+    }
+    set responseBodyType(s) {
+        this.setResponseBodyType(s);
+    }
+    set requestBodyType(s) {
+        this.setRequestBodyType(s);
     }
     setRequestType(v) {
         this.requestClass = v;
@@ -17,14 +26,28 @@ class Route {
     }
     setResponseBodyType(s) {
         this.responseBodyClass = s;
+        const respBodyClass = s && s.TypeAwarePath;
+        if (respBodyClass) {
+            this.internal.responseBodyType = respBodyClass;
+            for (const d of this.docParents) {
+                d.internal.routes.push(this);
+            }
+        }
         return s;
     }
     setRequestBodyType(s) {
         this.requestBodyClass = s;
+        const reqBodyClass = s && s.TypeAwarePath;
+        if (reqBodyClass) {
+            this.internal.requestBodyType = reqBodyClass;
+        }
         return s;
     }
 }
 exports.Route = Route;
+class TypeCreatorObject {
+}
+exports.TypeCreatorObject = TypeCreatorObject;
 class Entity {
     constructor(name, routes) {
         this.routes = [];
@@ -43,67 +66,3 @@ class Entity {
     }
 }
 exports.Entity = Entity;
-exports.joinMessages = (...args) => {
-    return args.join(' ');
-};
-class DocGen {
-    constructor() {
-        this.routes = new Set();
-        this.typesRoot = process.env.typeaware_types_root;
-        this.info = {
-            entities: {},
-            miscRoutes: {}
-        };
-    }
-    createRoute(methods, path, entityName) {
-        return new Route(methods, path, entityName);
-    }
-    addRoute(methods, path, entityName) {
-        const r = this.createRoute(methods, path, entityName);
-        this.routes.add(r);
-        return r;
-    }
-    createEntity(name, routes) {
-        return new Entity(name, routes);
-    }
-    createAndAddEntity(name, routes) {
-        if (this.info.entities[name]) {
-            throw new Error(exports.joinMessages('OreDoc already has an entity with name:', name));
-        }
-        const entity = this.createEntity(name, routes);
-        this.info.entities[entity.name] = entity;
-        return entity;
-    }
-    addEntity(v) {
-        if (this.info.entities[v.name]) {
-            throw new Error(exports.joinMessages('OreDoc already has an entity with name:', v.name));
-        }
-        this.info.entities[v.name] = v;
-        return this;
-    }
-    addMiscRoute(v) {
-        if (this.info.miscRoutes[v.path]) {
-            throw new Error(exports.joinMessages('OreDoc already has a misc route with path:', v.path));
-        }
-        this.info.miscRoutes[v.path] = v;
-        return this;
-    }
-    addRoute2(entity, v) {
-        return this;
-    }
-    serialize() {
-        return safe.stringify(this.info);
-    }
-    serve() {
-        return (req, res, next) => {
-            try {
-                res.json(this.info);
-            }
-            catch (err) {
-                logger_1.default.error(err);
-                next(err);
-            }
-        };
-    }
-}
-exports.DocGen = DocGen;

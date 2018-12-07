@@ -8,7 +8,6 @@ import {flattenDeep, HTTPMethods} from "./shared";
 import {RequestHandler} from 'express';
 import {DocGen} from "./doc-gen";
 
-
 export interface Headers {
   [key: string]: string
 }
@@ -47,47 +46,95 @@ export interface RouteInfo {
   }
 }
 
-
 export interface RouteMap {
   [key: string]: RouteInfo
 }
 
-
-export class Route <Req = any, Res = any, ReqBody = any, ResBody = any>{
+export class Route<ReqBody extends TypeCreatorObject, ResBody extends TypeCreatorObject> {
   
   path: string;
   methods: HTTPMethods[];
-  requestClass: Req;
-  responseClass: Res;
-  requestBodyClass: any;
-  responseBodyClass: any;
-  responseBodyType: string;
-  requestBodyType: string;
+  requestClass: any;
+  responseClass: any;
+  requestBodyClass: ReqBody;
+  responseBodyClass: ResBody;
+  docParents: Array<DocGen>;  // parents
   
-  constructor(methods: HTTPMethods[], p: string, entityName?: string){
+  internal: {
+    responseBodyType: string;
+    requestBodyType: string;
+  };
+  
+  constructor(methods: HTTPMethods[], p: string, entityName?: string) {
+    this.docParents = [];
     this.methods = methods.slice(0);
+    this.internal = {
+      responseBodyType: '',
+      requestBodyType: ''
+    }
   }
   
-  setRequestType(v: Req): Req {
+  // get responseBodyType() : string{
+  //   return this.internal.responseBodyType;
+  // }
+  
+  // get requestBodyType(){
+  //   this.setRequestBodyType(s);
+  // }
+  
+  set responseBodyType(s: ResBody) {
+    this.setResponseBodyType(s);
+  }
+  
+  set requestBodyType(s: ReqBody) {
+    this.setRequestBodyType(s);
+  }
+  
+  setRequestType(v: any): any {
     this.requestClass = v;
     return v;
   }
   
-  setResponseType(v: Res): Res{
+  setResponseType(v: any): any {
     this.responseClass = v;
     return v;
   }
   
   setResponseBodyType(s: ResBody): ResBody {
+    
     this.responseBodyClass = s;
+    const respBodyClass = s && s.TypeAwarePath;
+    
+    if (respBodyClass) {
+      this.internal.responseBodyType = respBodyClass;
+      for(const d of this.docParents){
+        d.internal.routes.push(this);
+      }
+    }
+    
     return s;
   }
   
   setRequestBodyType(s: ReqBody): ReqBody {
-    this.requestBodyClass =s;
+    
+    this.requestBodyClass = s;
+  
+    const reqBodyClass = s && s.TypeAwarePath;
+  
+    if (reqBodyClass) {
+      this.internal.requestBodyType = reqBodyClass;
+    }
+    
     return s;
   }
   
+}
+
+export class TypeCreatorObject {
+  TypeAwarePath: string;
+  TypeCreatorMeta: {
+    [key: string]: string
+  }
 }
 
 export class Entity {
@@ -98,7 +145,7 @@ export class Entity {
   constructor(name: string, routes?: RouteInfo | Array<RouteInfo>) {
     this.name = name;
     
-    for(let v of flattenDeep([routes]).filter(Boolean)){
+    for (let v of flattenDeep([routes]).filter(Boolean)) {
       this.routes.push(v);
     }
   }
@@ -114,17 +161,8 @@ export class Entity {
   }
 }
 
-export interface Info {
-  miscRoutes: {
-    [key: string]: RouteInfo
-  },
-  entities: {
-    [key: string]: Entity
-  }
-}
 
-export const joinMessages = (...args: string[]) => {
-  return args.join(' ');
-};
+
+
 
 

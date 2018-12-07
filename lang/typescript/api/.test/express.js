@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 // import {DocGen, Entity, RouteMulti} from '../dist/original';
-var expressjs_1 = require("../expressjs");
+var expressjs_1 = require("../dist/expressjs");
 var types_1 = require("../../.fixtures/types");
 var Foo = types_1.Entities.Foo;
 var app = express();
