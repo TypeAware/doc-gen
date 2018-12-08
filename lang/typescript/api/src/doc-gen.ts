@@ -66,7 +66,6 @@ export abstract class DocGen<Entities extends EntityMap> {
   }
   
   abstract serve(): Function;
-  
   abstract serveJSON(): Function;
   
   registerEntities(v: Entities) {

@@ -10,9 +10,9 @@ class ExpressDocGen extends doc_gen_1.DocGen {
     constructor(v) {
         super(v);
         const base = 'node_modules/@typeaware/api-app/dist/api-app/';
-        const viewPath = path.resolve(process.cwd() + `/${base}/index.html`);
+        const viewPath = path.resolve(process.cwd() + `/${base}/index-final.html`);
         const realPath = fs.realpathSync(viewPath);
-        this.view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', base);
+        this.view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/');
     }
     makeAddRoute1(router, entityName) {
         return (methods, route, f) => {

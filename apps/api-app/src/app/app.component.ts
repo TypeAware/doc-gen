@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+declare const appData: any;
+
+console.log('appData:', appData);
 
 @Component({
   selector: 'app-root',
