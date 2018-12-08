@@ -18,6 +18,8 @@ const d = new ExpressDocGen({
 d.addEntity({name:'rabbit'});
 d.addEntity({name:'stank'});
 
+app.use('/node_modules', express.static('node_modules'));
+
 app.route('/login')
 
 // show the form (GET http://localhost:8080/login)

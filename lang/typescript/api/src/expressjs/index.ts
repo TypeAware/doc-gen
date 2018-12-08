@@ -13,16 +13,17 @@ import * as fs from 'fs';
 
 type NestedRequestHandler = RequestHandler | Array<RequestHandler> | Array<Array<RequestHandler>>
 
-
 export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> {
   
   view: string;
   
-  constructor(v: DocGenOpts){
+  constructor(v: DocGenOpts) {
     super(v);
-  
-    const viewPath = path.resolve(process.cwd() + 'node_modules/@typeaware/api-app/dist/index.html');
-    this.view = fs.readFileSync(viewPath, 'utf8');
+    
+    const base = 'node_modules/@typeaware/api-app/dist/api-app/';
+    const viewPath = path.resolve(process.cwd() + `/${base}/index.html`);
+    const realPath = fs.realpathSync(viewPath);
+    this.view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', base);
   }
   
   makeAddRoute1(router: any, entityName: string) {
@@ -34,14 +35,13 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
     }
   }
   
-  makeHandler<ReqBody extends TypeCreatorObject= any, ResBody extends TypeCreatorObject = any>(methods: HTTPMethods[], route: string, fn: (r: BasicRoute) => RequestHandler) {
-    return fn(new Route<ReqBody,ResBody>(methods, route));
+  makeHandler<ReqBody extends TypeCreatorObject = any, ResBody extends TypeCreatorObject = any>(methods: HTTPMethods[], route: string, fn: (r: BasicRoute) => RequestHandler) {
+    return fn(new Route<ReqBody, ResBody>(methods, route));
   }
   
-  makeSimpleHandler<ReqBody extends TypeCreatorObject= any, ResBody extends TypeCreatorObject = any>(fn: (r: BasicRoute) => RequestHandler) {
-    return fn(new Route<ReqBody,ResBody>());
+  makeSimpleHandler<ReqBody extends TypeCreatorObject = any, ResBody extends TypeCreatorObject = any>(fn: (r: BasicRoute) => RequestHandler) {
+    return fn(new Route<ReqBody, ResBody>());
   }
-  
   
   makeAddRoute(router: any, entityName?: string) {
     return (methods: HTTPMethods | HTTPMethods[], route: string, fn: (r: BasicRoute) => NestedRequestHandler) => {
@@ -54,18 +54,16 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
     }
   }
   
-  _makecustomReplacer(cache: Set<any>){
+  _makecustomReplacer(cache: Set<any>) {
     
     return (key: string, val: any) => {
-  
-  
-      if(val instanceof Route || typeof val.justId === 'function'){
+      
+      if (val instanceof Route || typeof val.justId === 'function') {
         log.info('getting route:', val);
-        const v =  val.justId();
+        const v = val.justId();
         cache.add(v);
         return v;
       }
-  
       
       if (val && typeof val === 'object') {
         if (cache.has(val)) {
@@ -78,32 +76,31 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
       
       log.info('the val:', val);
       
-  
       return val;
-    
+      
     };
-  
+    
   }
   
-  serve(): RequestHandler{
-  
+  serve(): RequestHandler {
+    
     return (req, res, next) => {
-  
+      
       res.setHeader('Content-Type', 'text/html'); //or text/plain
       const v = this.getJSON();
       const str = JSON.stringify(v);
-      res.end(str.replace('<%json%>', str));
+      res.end(this.view.replace('<%=json%>', str));
     };
   }
   
-  getJSON(){
-  
+  getJSON() {
+    
     const typeMapValue = this.getTypeMap();
-  
-    const typeMap = Object.keys(typeMapValue).map(k =>{
+    
+    const typeMap = Object.keys(typeMapValue).map(k => {
       return {[k]: typeMapValue[k].map(v => v.id)}
     });
-  
+    
     return {
       routes: this.getRoutes(),
       entities: this.getEntities(),

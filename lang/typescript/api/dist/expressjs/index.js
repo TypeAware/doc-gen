@@ -1,12 +1,18 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
 const doc_gen_1 = require("../doc-gen");
 const main_1 = require("../main");
 const shared_1 = require("../shared");
 const logger_1 = require("../logger");
+const fs = require("fs");
 class ExpressDocGen extends doc_gen_1.DocGen {
     constructor(v) {
         super(v);
+        const base = 'node_modules/@typeaware/api-app/dist/api-app/';
+        const viewPath = path.resolve(process.cwd() + `/${base}/index.html`);
+        const realPath = fs.realpathSync(viewPath);
+        this.view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', base);
     }
     makeAddRoute1(router, entityName) {
         return (methods, route, f) => {
@@ -52,16 +58,27 @@ class ExpressDocGen extends doc_gen_1.DocGen {
     }
     serve() {
         return (req, res, next) => {
-            const typeMapValue = this.getTypeMap();
-            const typeMap = Object.keys(typeMapValue).map(k => {
-                return { [k]: typeMapValue[k].map(v => v.id) };
-            });
-            const v = {
-                routes: this.getRoutes(),
-                entities: this.getEntities(),
-                typeExamples: this.getTypeExamples(),
-                typeMap
-            };
+            res.setHeader('Content-Type', 'text/html');
+            const v = this.getJSON();
+            const str = JSON.stringify(v);
+            res.end(this.view.replace('<%=json%>', str));
+        };
+    }
+    getJSON() {
+        const typeMapValue = this.getTypeMap();
+        const typeMap = Object.keys(typeMapValue).map(k => {
+            return { [k]: typeMapValue[k].map(v => v.id) };
+        });
+        return {
+            routes: this.getRoutes(),
+            entities: this.getEntities(),
+            typeExamples: this.getTypeExamples(),
+            typeMap
+        };
+    }
+    serveJSON() {
+        return (req, res, next) => {
+            const v = this.getJSON();
             const cache = new Set();
             try {
                 res.setHeader('Content-Type', 'application/json');

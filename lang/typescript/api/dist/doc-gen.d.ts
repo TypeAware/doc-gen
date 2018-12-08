@@ -35,6 +35,7 @@ export declare abstract class DocGen<Entities extends EntityMap> {
     typesRoot: string;
     constructor(v: DocGenOpts);
     abstract serve(): Function;
+    abstract serveJSON(): Function;
     registerEntities(v: Entities): void;
     createRoute(methods: HTTPMethods[], path: string, entityName?: string): BasicRoute;
     addRoute(methods: HTTPMethods[], path: string, entityName?: string): BasicRoute;
