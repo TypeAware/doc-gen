@@ -6,8 +6,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./main.component.css']
 })
 export class MainComponent implements OnInit {
+  
+  routes = [1,2,3,4,5];
 
-  constructor() { }
+  constructor() {
+  
+  
+  }
 
   ngOnInit() {
   }
