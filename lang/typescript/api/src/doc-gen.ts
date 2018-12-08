@@ -24,6 +24,7 @@ export interface InternalInfo<Entities> {
 export interface TypeExamplesMap {
   [key:string]: {
     examples:Array<any>,
+    nameMap: {[key:string]: string},
     value: string | boolean | null  | Array<any> | {[key:string]: TypeExamplesMap}
   }
 }
@@ -65,6 +66,8 @@ export abstract class DocGen<Entities extends EntityMap> {
   }
   
   abstract serve(): Function;
+  
+  abstract serveJSON(): Function;
   
   registerEntities(v: Entities) {
     for (let k of Object.keys(v)) {

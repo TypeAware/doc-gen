@@ -1,5 +1,6 @@
 'use strict';
 
+import * as path from 'path';
 import * as express from 'express';
 import {BasicRoute, DocGen, DocGenOpts, EntityMap} from '../doc-gen';
 import {Entity, Route, TypeCreatorObject} from "../main";
@@ -8,14 +9,20 @@ import {RequestHandler} from 'express-serve-static-core';
 import log from "../logger";
 import * as safe from '@oresoftware/safe-stringify';
 import {runInThisContext} from "vm";
+import * as fs from 'fs';
 
 type NestedRequestHandler = RequestHandler | Array<RequestHandler> | Array<Array<RequestHandler>>
 
 
 export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> {
   
+  view: string;
+  
   constructor(v: DocGenOpts){
     super(v);
+  
+    const viewPath = path.resolve(process.cwd() + 'node_modules/@typeaware/api-app/dist/index.html');
+    this.view = fs.readFileSync(viewPath, 'utf8');
   }
   
   makeAddRoute1(router: any, entityName: string) {
@@ -78,23 +85,38 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
   
   }
   
-  serve(): RequestHandler {
+  serve(): RequestHandler{
+  
+    return (req, res, next) => {
+  
+      res.setHeader('Content-Type', 'text/html'); //or text/plain
+      const v = this.getJSON();
+      const str = JSON.stringify(v);
+      res.end(str.replace('<%json%>', str));
+    };
+  }
+  
+  getJSON(){
+  
+    const typeMapValue = this.getTypeMap();
+  
+    const typeMap = Object.keys(typeMapValue).map(k =>{
+      return {[k]: typeMapValue[k].map(v => v.id)}
+    });
+  
+    return {
+      routes: this.getRoutes(),
+      entities: this.getEntities(),
+      typeExamples: this.getTypeExamples(),
+      typeMap
+    };
+  }
+  
+  serveJSON(): RequestHandler {
     
     return (req, res, next) => {
       
-      const typeMapValue = this.getTypeMap();
-      
-      const typeMap = Object.keys(typeMapValue).map(k =>{
-         return {[k]: typeMapValue[k].map(v => v.id)}
-      });
-      
-      const v = {
-        routes: this.getRoutes(),
-        entities: this.getEntities(),
-        typeExamples: this.getTypeExamples(),
-        typeMap
-      };
-      
+      const v = this.getJSON();
       const cache = new Set<any>();
       
       try {

@@ -17,12 +17,10 @@ export class Foo {
     this.internal.entities[v.name] = v;
   }
   
-  
 }
 
 
 export class Bar extends Foo {
-  
   
   constructor(){
     super();
@@ -31,7 +29,6 @@ export class Bar extends Foo {
   getEntities(){
     console.log(this.internal.entities);
   }
-  
   
 }
 

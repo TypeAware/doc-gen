@@ -16,6 +16,9 @@ export interface InternalInfo<Entities> {
 export interface TypeExamplesMap {
     [key: string]: {
         examples: Array<any>;
+        nameMap: {
+            [key: string]: string;
+        };
         value: string | boolean | null | Array<any> | {
             [key: string]: TypeExamplesMap;
         };

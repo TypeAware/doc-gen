@@ -17,6 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "@oresoftware/safe-stringify": "0.0.1001",
+    "@typeaware/api-app": "file:../../../apps/api-app",
     "chalk": "^2.4.1",
     "short-uuid": "^3.0.1",
     "shortid": "^2.2.14"
