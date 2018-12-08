@@ -3,13 +3,20 @@
 import * as express from 'express';
 import {RequestHandler} from 'express';
 // import {DocGen, Entity, RouteMulti} from '../dist/original';
-import {ExpressDocGen} from '../dist/expressjs';
-import {Entity, Route} from '../dist/main';
-import {Entities} from '../../.fixtures/types';
+import {ExpressDocGen} from '../expressjs';
+import {Entity, Route} from '../main';
+import {Entities} from '../../../.fixtures/types';
 import Foo = Entities.Foo;
 
 const app = express();
-const d = new ExpressDocGen();
+
+const d = new ExpressDocGen({
+  basePath: __dirname,
+  typesRoot: '/home/oleg/codes/typeaware/types-depot/builds/json/entities.json'
+});
+
+d.addEntity({name:'rabbit'});
+d.addEntity({name:'stank'});
 
 app.route('/login')
 
@@ -30,11 +37,9 @@ app.route('/login')
 
 
 const router = express.Router();
-type HTTPMethods = 'put' | 'get' | 'head' | 'post' | 'delete';
 
 
-
-export const register = (v: string, d: ExpressDocGen) => {
+export const register = (v: string, d: ExpressDocGen<any>) => {
   
   // router.get('/', makeGetFoo(v, d));
   // router.put('/', makePutFoo(v, d));
@@ -47,6 +52,8 @@ export const register = (v: string, d: ExpressDocGen) => {
   addRoute(['get'], '/', r => [makeGetFoo(v,r)]);
   addRoute(['put'], '/', r => makePutFoo(v,r));
   
+  router.post('/foo', makePostFoo);
+  
   
   // addRoute(['get'], '/', (method, route) => router[method](route,));
   
@@ -56,8 +63,25 @@ export const register = (v: string, d: ExpressDocGen) => {
   //
   // }
   
+  app.use('/docs', d.serve());
+  
+  app.use(function(req,res,next){
+    res.json({error: 'fuk'});
+  });
+  
+  app.listen(3000);
   
 };
+
+
+const makePostFoo = d.makeHandler(['post'], '/foo',r => {
+  
+  
+  return (req,res,next) => {
+  
+  };
+  
+});
 
 
 
@@ -75,10 +99,10 @@ const makeGetFoo = (v: string, r: Route) : Array<RequestHandler> => {
   // type Res =  Res1;
   
   
-  const req = r.setResponseBodyType(Foo.GET.Basic.Req);
+  const req = r.setRequestBodyType(Foo.GET.Basic.Req);
   type Req = typeof req;
   
-  const res = r.setResponseBodyType(Foo.GET.Basic.Req);
+  const res = r.setResponseBodyType(Foo.GET.Basic.Res);
   type Res = typeof res;
   
   
@@ -116,6 +140,6 @@ const makePutFoo = (v: string, r: Route) : RequestHandler => {
 
 register(
   'injection data here',
-  new ExpressDocGen()
+  d
 );
 

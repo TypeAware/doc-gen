@@ -1,5 +1,5 @@
 'use strict';
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var Entities;
 (function (Entities) {
     var Foo;
@@ -17,12 +17,14 @@ var Entities;
                 var Req = /** @class */ (function () {
                     function Req() {
                     }
+                    Req.TypeAwarePath = 'Entities.Foo.GET.Basic.Req';
                     return Req;
                 }());
                 Basic.Req = Req;
                 var Res = /** @class */ (function () {
                     function Res() {
                     }
+                    Res.TypeAwarePath = 'Entities.Foo.GET.Basic.Res';
                     return Res;
                 }());
                 Basic.Res = Res;

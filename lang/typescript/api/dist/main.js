@@ -1,14 +1,37 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const shared_1 = require("./shared");
+const shortid = require("shortid");
 class Route {
-    constructor(methods, p, entityName) {
+    constructor(methods, path, entityName) {
         this.docParents = [];
-        this.methods = methods.slice(0);
-        this.internal = {
+        this.id = shortid.generate();
+        this.path = path;
+        this.entityName = entityName;
+        this.methods = shared_1.flattenDeep([methods]).filter(Boolean);
+        this.types = {
             responseBodyType: '',
             requestBodyType: ''
         };
+    }
+    justId() {
+        return {
+            id: this.id
+        };
+    }
+    toJSON() {
+        return {
+            id: this.id,
+            path: this.path || '(no path)',
+            description: this.description || '(no description)',
+            methods: this.methods,
+            entityName: this.entityName,
+            types: this.types
+        };
+    }
+    setDescription(d) {
+        this.description = d;
+        return this;
     }
     set responseBodyType(s) {
         this.setResponseBodyType(s);
@@ -28,9 +51,12 @@ class Route {
         this.responseBodyClass = s;
         const respBodyClass = s && s.TypeAwarePath;
         if (respBodyClass) {
-            this.internal.responseBodyType = respBodyClass;
+            this.types.responseBodyType = respBodyClass;
             for (const d of this.docParents) {
-                d.internal.routes.push(this);
+                d._addToTypeMap(respBodyClass, this);
+                if (!d.internal.routes.includes(this)) {
+                    d.internal.routes.push(this);
+                }
             }
         }
         return s;
@@ -39,7 +65,13 @@ class Route {
         this.requestBodyClass = s;
         const reqBodyClass = s && s.TypeAwarePath;
         if (reqBodyClass) {
-            this.internal.requestBodyType = reqBodyClass;
+            this.types.requestBodyType = reqBodyClass;
+            for (const d of this.docParents) {
+                d._addToTypeMap(reqBodyClass, this);
+                if (!d.internal.routes.includes(this)) {
+                    d.internal.routes.push(this);
+                }
+            }
         }
         return s;
     }
@@ -49,20 +81,8 @@ class TypeCreatorObject {
 }
 exports.TypeCreatorObject = TypeCreatorObject;
 class Entity {
-    constructor(name, routes) {
-        this.routes = [];
+    constructor(name) {
         this.name = name;
-        for (let v of shared_1.flattenDeep([routes]).filter(Boolean)) {
-            this.routes.push(v);
-        }
-    }
-    addRoute(v) {
-        this.routes.push(v);
-        return this;
-    }
-    attachTo(d) {
-        d.addEntity(this);
-        return this;
     }
 }
 exports.Entity = Entity;

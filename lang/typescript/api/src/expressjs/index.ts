@@ -1,18 +1,21 @@
 'use strict';
 
 import * as express from 'express';
-import {BasicRoute, DocGen} from '../doc-gen';
-import {Route} from "../main";
-import {HTTPMethods, flattenDeep} from "../shared";
+import {BasicRoute, DocGen, DocGenOpts, EntityMap} from '../doc-gen';
+import {Entity, Route, TypeCreatorObject} from "../main";
+import {HTTPMethods, flattenDeep, joinMessages} from "../shared";
 import {RequestHandler} from 'express-serve-static-core';
 import log from "../logger";
+import * as safe from '@oresoftware/safe-stringify';
+import {runInThisContext} from "vm";
 
 type NestedRequestHandler = RequestHandler | Array<RequestHandler> | Array<Array<RequestHandler>>
 
-export class ExpressDocGen extends DocGen {
+
+export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> {
   
-  constructor(){
-    super();
+  constructor(v: DocGenOpts){
+    super(v);
   }
   
   makeAddRoute1(router: any, entityName: string) {
@@ -24,13 +27,19 @@ export class ExpressDocGen extends DocGen {
     }
   }
   
-  makeHandler(methods: HTTPMethods[], route: string, fn: (r: BasicRoute) => RequestHandler) {
-    return fn(new Route(methods, route));
+  makeHandler<ReqBody extends TypeCreatorObject= any, ResBody extends TypeCreatorObject = any>(methods: HTTPMethods[], route: string, fn: (r: BasicRoute) => RequestHandler) {
+    return fn(new Route<ReqBody,ResBody>(methods, route));
   }
+  
+  makeSimpleHandler<ReqBody extends TypeCreatorObject= any, ResBody extends TypeCreatorObject = any>(fn: (r: BasicRoute) => RequestHandler) {
+    return fn(new Route<ReqBody,ResBody>());
+  }
+  
   
   makeAddRoute(router: any, entityName?: string) {
     return (methods: HTTPMethods | HTTPMethods[], route: string, fn: (r: BasicRoute) => NestedRequestHandler) => {
-      const r = this.addRoute(flattenDeep([methods]).filter(Boolean), route, entityName);
+      const filteredMethods = flattenDeep([methods]).filter(Boolean);
+      const r = this.addRoute(filteredMethods, route, entityName);
       const handlers = flattenDeep([fn(r)]);
       for (const v of methods) {
         (router as any)[v as any](route, ...handlers);
@@ -38,12 +47,61 @@ export class ExpressDocGen extends DocGen {
     }
   }
   
+  _makecustomReplacer(cache: Set<any>){
+    
+    return (key: string, val: any) => {
+  
+  
+      if(val instanceof Route || typeof val.justId === 'function'){
+        log.info('getting route:', val);
+        const v =  val.justId();
+        cache.add(v);
+        return v;
+      }
+  
+      
+      if (val && typeof val === 'object') {
+        if (cache.has(val)) {
+          // Circular reference found, discard key
+          return;
+        }
+        // Store value in our map
+        cache.add(val);
+      }
+      
+      log.info('the val:', val);
+      
+  
+      return val;
+    
+    };
+  
+  }
+  
   serve(): RequestHandler {
     
     return (req, res, next) => {
       
+      const typeMapValue = this.getTypeMap();
+      
+      const typeMap = Object.keys(typeMapValue).map(k =>{
+         return {[k]: typeMapValue[k].map(v => v.id)}
+      });
+      
+      const v = {
+        routes: this.getRoutes(),
+        entities: this.getEntities(),
+        typeExamples: this.getTypeExamples(),
+        typeMap
+      };
+      
+      const cache = new Set<any>();
+      
       try {
-        res.json(this.internal);
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(v));
+        // res.end(JSON.stringify(this.internal, this._makecustomReplacer(cache)));
+        // res.end(safe.stringify(this.internal));
       }
       catch (err) {
         log.error(err);

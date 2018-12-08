@@ -3,7 +3,7 @@
     "allowJs": false,
     "pretty": true,
     "outDir": "dist",
-    "resolveJsonModule": true,
+    "resolveJsonModule": false,
     "sourceMap": false,
     "skipLibCheck": true,
     "declaration": true,
@@ -14,13 +14,11 @@
     "removeComments": true,
     "allowUnreachableCode": true,
     "lib": [
-      "es2015",
-      "es2016",
       "es2017"
     ]
   },
   "compileOnSave": false,
   "include":  [
-    "src"
+    "src/**/*.ts"
   ]
 }

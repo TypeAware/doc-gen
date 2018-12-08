@@ -5,13 +5,30 @@ const safe = require("@oresoftware/safe-stringify");
 const logger_1 = require("./logger");
 const main_1 = require("./main");
 class DocGen {
-    constructor() {
-        this.typesRoot = process.env.typeaware_types_root;
+    constructor(v) {
+        this.basePath = '';
+        this.filePath = '';
+        this.typesRoot = '';
+        this.basePath = v.basePath;
+        let typeExamplesObj = null;
+        let typeExamples = process.env.typeaware_types_root;
+        if (v.typesRoot) {
+            typeExamples = v.typesRoot;
+        }
+        if (typeExamples) {
+            typeExamplesObj = require(typeExamples);
+        }
         this.internal = {
-            typeMap: {},
+            typeExamples: typeExamplesObj,
             entities: {},
-            routes: []
+            routes: [],
+            typeMap: {},
         };
+    }
+    registerEntities(v) {
+        for (let k of Object.keys(v)) {
+            this.internal.entities[k] = v[k];
+        }
     }
     createRoute(methods, path, entityName) {
         const r = new main_1.Route(methods, path, entityName);
@@ -23,8 +40,15 @@ class DocGen {
         this.internal.routes.push(r);
         return r;
     }
-    createEntity(name, routes) {
-        return new main_1.Entity(name, routes);
+    createEntity(name) {
+        return new main_1.Entity(name);
+    }
+    _addToTypeMap(name, v) {
+        const s = this.internal.typeMap[name] = this.internal.typeMap[name] || [];
+        if (!s.includes(v)) {
+            s.push(v);
+        }
+        return v;
     }
     addEntity(v) {
         if (this.internal.entities[v.name]) {
@@ -33,11 +57,24 @@ class DocGen {
         this.internal.entities[v.name] = v;
         return this;
     }
+    getTypeExamples() {
+        return this.internal.typeExamples;
+    }
+    getTypeMap() {
+        return this.internal.typeMap;
+    }
+    getEntities() {
+        return this.internal.entities;
+    }
+    getRoutes() {
+        return this.internal.routes;
+    }
     serialize() {
         return safe.stringify(this.internal);
     }
     compareHTTPRequestHeaders(types) {
         const m = new Map();
+        const headers = ['x_tc_req_body_type', 'x_tc_resp_body_type'];
         for (const t of types) {
             const metaField = t.TypeCreatorMeta;
             if (!metaField) {
@@ -49,14 +86,14 @@ class DocGen {
                 logger_1.default.error('Missing "TypeCreatorMeta" field.');
                 continue;
             }
-            for (const v of ['x_tc_req_body_type', 'x_tc_resp_body_type']) {
+            for (const v of headers) {
                 if (metaField[v]) {
                     m.set(v, typeField);
                 }
             }
         }
         return (req, res, next) => {
-            for (const h of ['x_tc_req_body_type', 'x_tc_resp_body_type']) {
+            for (const h of headers) {
                 if (req.headers[h] && req.headers[h] !== m.get(h)) {
                     logger_1.default.error('The following header does not match the expected value.', 'Actual:', req.headers[h], 'Expected:', m.get(h));
                 }

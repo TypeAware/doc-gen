@@ -35,19 +35,27 @@ export interface RouteInfo {
 export interface RouteMap {
     [key: string]: RouteInfo;
 }
-export declare class Route<ReqBody extends TypeCreatorObject, ResBody extends TypeCreatorObject> {
+export declare class Route<ReqBody extends TypeCreatorObject = any, ResBody extends TypeCreatorObject = any> {
+    id: string;
     path: string;
+    description: string;
+    entityName: string;
     methods: HTTPMethods[];
     requestClass: any;
     responseClass: any;
     requestBodyClass: ReqBody;
     responseBodyClass: ResBody;
-    docParents: Array<DocGen>;
-    internal: {
+    docParents: Array<DocGen<any>>;
+    types: {
         responseBodyType: string;
         requestBodyType: string;
     };
-    constructor(methods: HTTPMethods[], p: string, entityName?: string);
+    constructor(methods?: HTTPMethods[], path?: string, entityName?: string);
+    justId(): {
+        id: string;
+    };
+    toJSON(): any;
+    setDescription(d: string): this;
     responseBodyType: ResBody;
     requestBodyType: ReqBody;
     setRequestType(v: any): any;
@@ -63,8 +71,5 @@ export declare class TypeCreatorObject {
 }
 export declare class Entity {
     name: string;
-    routes: Array<RouteInfo>;
-    constructor(name: string, routes?: RouteInfo | Array<RouteInfo>);
-    addRoute(v: RouteInfo): this;
-    attachTo(d: DocGen): this;
+    constructor(name: string);
 }

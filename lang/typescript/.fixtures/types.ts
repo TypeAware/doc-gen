@@ -4,10 +4,13 @@ export namespace Entities {
   export namespace Foo {
     export namespace GET {
       export  namespace Basic {
+        
         export class Roop {
         
         }
+        
         export class Req {
+          static TypeAwarePath = 'Entities.Foo.GET.Basic.Req';
           headers: {
             zoomHeader: number
           };
@@ -15,7 +18,9 @@ export namespace Entities {
             zoomBody: string
           }
         }
-        export  class Res {
+        
+        export class Res {
+          static TypeAwarePath = 'Entities.Foo.GET.Basic.Res';
           headers: {};
           body: {
             foo1: number,
