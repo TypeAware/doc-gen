@@ -1,0 +1,377 @@
+{
+  "routes": [
+    {
+      "id": "ucRMstnvgC",
+      "path": "/",
+      "description": "(no description)",
+      "methods": [
+        "get"
+      ],
+      "entityName": "dogs",
+      "types": {
+        "responseBodyType": "Entities.Foo.GET.Basic.Res",
+        "requestBodyType": "Entities.Foo.GET.Basic.Req"
+      }
+    },
+    {
+      "id": "-Jrq0biFrX",
+      "path": "/",
+      "description": "(no description)",
+      "methods": [
+        "put"
+      ],
+      "entityName": "dogs",
+      "types": {
+        "responseBodyType": "",
+        "requestBodyType": ""
+      }
+    },
+    {
+      "id": "wSU2UpJMZ_",
+      "path": "/",
+      "description": "(no description)",
+      "methods": [
+        "get"
+      ],
+      "entityName": "dogs",
+      "types": {
+        "responseBodyType": "Entities.Foo.GET.Basic.Res",
+        "requestBodyType": "Entities.Foo.GET.Basic.Req"
+      }
+    },
+    {
+      "id": "j290OEECIe",
+      "path": "/",
+      "description": "(no description)",
+      "methods": [
+        "put"
+      ],
+      "entityName": "dogs",
+      "types": {
+        "responseBodyType": "",
+        "requestBodyType": ""
+      }
+    }
+  ],
+  "entities": {
+    "rabbit": {
+      "name": "rabbit"
+    },
+    "stank": {
+      "name": "stank"
+    }
+  },
+  "typeExamples": {
+    "Entities": {
+      "nameMap": {
+        "foo": "foo",
+        "bar": "bar"
+      },
+      "value": {
+        "foo": {
+          "nameMap": {
+            "PUT": "PUT",
+            "GET": "GET"
+          },
+          "value": {
+            "PUT": {
+              "nameMap": {
+                "basic": "basic",
+                "tragic": "tragic"
+              },
+              "value": {
+                "basic": {
+                  "nameMap": {
+                    "req": "req",
+                    "res": "res"
+                  },
+                  "value": {
+                    "req": {
+                      "examples": [],
+                      "nameMap": {
+                        "headers": "headers",
+                        "body": "body"
+                      },
+                      "value": {
+                        "headers": {
+                          "examples": [],
+                          "nameMap": {
+                            "x_requested_by": "x_requested_by"
+                          },
+                          "value": {
+                            "x_requested_by": "string"
+                          }
+                        },
+                        "body": {
+                          "examples": [],
+                          "nameMap": {
+                            "foo": "foo",
+                            "bar": "bar",
+                            "zoom": "zoom"
+                          },
+                          "value": {
+                            "foo": "string",
+                            "bar": "number",
+                            "zoom": "boolean"
+                          }
+                        }
+                      }
+                    },
+                    "res": {
+                      "examples": [],
+                      "nameMap": {
+                        "headers": "headers"
+                      },
+                      "value": {
+                        "headers": {
+                          "examples": [],
+                          "nameMap": {},
+                          "value": {}
+                        }
+                      }
+                    }
+                  }
+                },
+                "tragic": {
+                  "nameMap": {
+                    "req": "req",
+                    "res": "res"
+                  },
+                  "value": {
+                    "req": {
+                      "examples": [],
+                      "nameMap": {
+                        "headers": "headers",
+                        "body": "body"
+                      },
+                      "value": {
+                        "headers": {
+                          "examples": [],
+                          "nameMap": {
+                            "x_requested_by": "x_requested_by"
+                          },
+                          "value": {
+                            "x_requested_by": "string"
+                          }
+                        },
+                        "body": {
+                          "examples": [],
+                          "nameMap": {
+                            "foo": "foo"
+                          },
+                          "value": {
+                            "foo": "string"
+                          }
+                        }
+                      }
+                    },
+                    "res": {
+                      "examples": [],
+                      "nameMap": {
+                        "headers": "headers"
+                      },
+                      "value": {
+                        "headers": {
+                          "examples": [],
+                          "nameMap": {},
+                          "value": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "GET": {
+              "nameMap": {
+                "miasmic": "miasmic"
+              },
+              "value": {
+                "miasmic": {
+                  "nameMap": {
+                    "req": "req",
+                    "res": "res"
+                  },
+                  "value": {
+                    "req": {
+                      "examples": [],
+                      "nameMap": {
+                        "headers": "headers",
+                        "body": "body"
+                      },
+                      "value": {
+                        "headers": {
+                          "examples": [],
+                          "nameMap": {
+                            "x_requested_by": "x_requested_by"
+                          },
+                          "value": {
+                            "x_requested_by": "string"
+                          }
+                        },
+                        "body": {
+                          "examples": [],
+                          "nameMap": {
+                            "foo": "foo"
+                          },
+                          "value": {
+                            "foo": "string"
+                          }
+                        }
+                      }
+                    },
+                    "res": {
+                      "examples": [],
+                      "nameMap": {
+                        "headers": "headers"
+                      },
+                      "value": {
+                        "headers": {
+                          "examples": [],
+                          "nameMap": {},
+                          "value": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bar": {
+          "nameMap": {
+            "PUT": "PUT",
+            "GET": "GET"
+          },
+          "value": {
+            "PUT": {
+              "nameMap": {
+                "basic": "basic"
+              },
+              "value": {
+                "basic": {
+                  "nameMap": {
+                    "req": "req",
+                    "res": "res"
+                  },
+                  "value": {
+                    "req": {
+                      "examples": [],
+                      "nameMap": {
+                        "headers": "headers",
+                        "body": "body"
+                      },
+                      "value": {
+                        "headers": {
+                          "examples": [],
+                          "nameMap": {},
+                          "value": {}
+                        },
+                        "body": {
+                          "examples": [],
+                          "nameMap": {
+                            "mip": "mip",
+                            "mop": "mop",
+                            "map": "map"
+                          },
+                          "value": {
+                            "mip": "string",
+                            "mop": "number",
+                            "map": "boolean"
+                          }
+                        }
+                      }
+                    },
+                    "res": {
+                      "examples": [],
+                      "nameMap": {
+                        "headers": "headers"
+                      },
+                      "value": {
+                        "headers": {
+                          "examples": [],
+                          "nameMap": {},
+                          "value": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "GET": {
+              "nameMap": {
+                "basic": "basic"
+              },
+              "value": {
+                "basic": {
+                  "nameMap": {
+                    "req": "req",
+                    "res": "res"
+                  },
+                  "value": {
+                    "req": {
+                      "examples": [],
+                      "nameMap": {
+                        "headers": "headers",
+                        "body": "body"
+                      },
+                      "value": {
+                        "headers": {
+                          "examples": [],
+                          "nameMap": {},
+                          "value": {}
+                        },
+                        "body": {
+                          "examples": [],
+                          "nameMap": {
+                            "tip": "tip",
+                            "top": "top",
+                            "tap": "tap"
+                          },
+                          "value": {
+                            "tip": "string",
+                            "top": "number",
+                            "tap": "boolean"
+                          }
+                        }
+                      }
+                    },
+                    "res": {
+                      "examples": [],
+                      "nameMap": {
+                        "headers": "headers"
+                      },
+                      "value": {
+                        "headers": {
+                          "examples": [],
+                          "nameMap": {},
+                          "value": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "typeMap": [
+    {
+      "Entities.Foo.GET.Basic.Req": [
+        "ucRMstnvgC",
+        "wSU2UpJMZ_"
+      ]
+    },
+    {
+      "Entities.Foo.GET.Basic.Res": [
+        "ucRMstnvgC",
+        "wSU2UpJMZ_"
+      ]
+    }
+  ]
+}

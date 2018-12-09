@@ -97,6 +97,9 @@ export class Route<ReqBody extends TypeCreatorObject = any, ResBody extends Type
   }
   
   toJSON(): any {
+    
+    // return this;
+    
     return {
       id: this.id,
       path: this.path || '(no path)',

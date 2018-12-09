@@ -90,7 +90,12 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
       
       res.setHeader('Content-Type', 'text/html'); //or text/plain
       const v = this.getJSON();
-      const str = JSON.stringify(v);
+      // const str = JSON.stringify(v);
+      // console.log('dooooo');
+      const str = safe.stringifyDeep(v);
+      console.log({str});
+      const strm = fs.createWriteStream(process.cwd() + '/json.json');
+      strm.end(str + '\n');
       res.end(this.view.replace('<%=json%>', str));
     };
   }
