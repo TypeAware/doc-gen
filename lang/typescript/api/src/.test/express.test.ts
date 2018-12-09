@@ -3,8 +3,9 @@
 import * as express from 'express';
 import {RequestHandler} from 'express';
 // import {DocGen, Entity, RouteMulti} from '../dist/original';
-import {ExpressDocGen} from '../expressjs';
-import {Entity, Route} from '../main';
+import {BasicExpressRoute, ExpressDocGen} from '../expressjs/express-doc-gen';
+import {ExpressRoute} from "../expressjs/express-route";
+import {Entity} from '../entity';
 import {Entities} from '../../../.fixtures/types';
 import Foo = Entities.Foo;
 
@@ -46,24 +47,21 @@ export const register = (v: string, d: ExpressDocGen<any>) => {
   // router.get('/', makeGetFoo(v, d));
   // router.put('/', makePutFoo(v, d));
   
-  const addRoute = d.makeAddRoute(router, 'dogs');
+  const addRoute = d.makeAddRoute(router, new Entity('dogs'));
   
-  addRoute(['get'], '/', r => [makeGetFoo(v,r)]);
-  addRoute(['put'], '/', r => makePutFoo(v,r));
-  
-  addRoute(['get'], '/', r => [makeGetFoo(v,r)]);
-  addRoute(['put'], '/', r => makePutFoo(v,r));
+  addRoute(['get'], '/', r => [r.headRequest(),makeGetFoo(v,r)]);
+  addRoute(['put'], '/', r => [r.headRequest(),makePutFoo(v,r)]);
+  // addRoute(['post'], '/', r => [r.headRequest(),makePostFoo(v,r)]);
   
   router.post('/foo', makePostFoo);
   
-  
   // addRoute(['get'], '/', (method, route) => router[method](route,));
-  
-  
   // {
   //   let methods = ['get'], route = '/';
   //
   // }
+  
+  app.use(router);
   
   app.use('/docs', d.serve());
   
@@ -81,15 +79,14 @@ const makePostFoo = d.makeHandler(['post'], '/foo',r => {
   
   return (req,res,next) => {
   
+    res.json({method: r.methods, route:r.path});
   };
   
 });
 
 
 
-
-
-const makeGetFoo = (v: string, r: Route) : Array<RequestHandler> => {
+const makeGetFoo = (v: string, r: BasicExpressRoute) : Array<RequestHandler> => {
   
   // type Req =  x.setRequestType();
   // type Req =  typeof (x.setRequestBodyType(Foo.GET.Basic.Req));
@@ -112,20 +109,19 @@ const makeGetFoo = (v: string, r: Route) : Array<RequestHandler> => {
   // // x.setResponseBodyType(Res1);
   // x.setRequestBodyType(Foo.GET.Basic.Req);
   
-  
-  
   return [(req, res, next) => {
     
     const body: Req['body'] = req.body;
+    
     const headers = req.headers.foo;
     
-    res.json(<Res['body']>{foo1: 4});
+    res.json(<Res['body']>{method: r.methods, route:r.path});
     
   }];
   
 };
 
-const makePutFoo = (v: string, r: Route) : RequestHandler => {
+const makePutFoo = (v: string, r: BasicExpressRoute) : RequestHandler => {
   
   type Req = Entities.Foo.PUT.Basic.Req;
   type Res = Entities.Foo.PUT.Basic.Res;

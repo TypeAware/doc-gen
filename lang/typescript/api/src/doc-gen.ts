@@ -4,7 +4,9 @@ import {HTTPMethods, joinMessages} from "./shared";
 import * as safe from "@oresoftware/safe-stringify";
 import {RequestHandler} from "express";
 import log from "./logger";
-import {Entity, Route, RouteInfo, TypeCreatorObject} from "./main";
+import {ExpressRoute, TypeCreatorObject} from "./main";
+import {Route} from "./route";
+import {Entity} from "./entity";
 
 export type BasicRoute = Route<TypeCreatorObject, TypeCreatorObject>;
 
@@ -67,6 +69,7 @@ export abstract class DocGen<Entities extends EntityMap> {
   
   abstract serve(): Function;
   abstract serveJSON(): Function;
+  abstract compareHTTPRequestHeaders(types: Array<TypeCreatorObject>): Function;
   
   registerEntities(v: Entities) {
     for (let k of Object.keys(v)) {
@@ -74,16 +77,16 @@ export abstract class DocGen<Entities extends EntityMap> {
     }
   }
   
-  createRoute(methods: HTTPMethods[], path: string, entityName?: string): BasicRoute {
-    const r = new Route(methods, path, entityName);
+  createRoute(methods: HTTPMethods[], path: string, entities?: Entity | Array<Entity>): BasicRoute {
+    const r = new ExpressRoute(methods, path, entities);
     r.docParents.push(this);
     return r;
   }
   
-  addRoute(methods: HTTPMethods[], path: string, entityName?: string): BasicRoute {
-    const r = this.createRoute(methods, path, entityName);
+  addRoute<T extends BasicRoute>(methods: HTTPMethods[], path: string, entities?: Array<Entity>): T {
+    const r = this.createRoute(methods, path, entities);
     this.internal.routes.push(r);
-    return r;
+    return r as T;
   }
   
   createEntity(name: string): Entity {
@@ -143,53 +146,6 @@ export abstract class DocGen<Entities extends EntityMap> {
     return safe.stringify(this.internal);
   }
   
-  compareHTTPRequestHeaders(types: Array<TypeCreatorObject>): RequestHandler {
-    
-    const m = new Map<string, string>();
-    const headers = ['x_tc_req_body_type', 'x_tc_resp_body_type'];
-    
-    for (const t of types) {
-      
-      const metaField = t.TypeCreatorMeta;
-      
-      if (!metaField) {
-        log.error('Missing "TypeCreatorMeta" field.');
-        continue;
-      }
-      
-      const typeField = metaField.type || t.TypeAwarePath;
-      
-      if (!typeField) {
-        log.error('Missing "TypeCreatorMeta" field.');
-        continue;
-      }
-      
-      for (const v of headers) {
-        
-        if (metaField[v]) {
-          m.set(v, typeField);
-        }
-        
-      }
-      
-    }
-    
-    return (req, res, next) => {
-      
-      for (const h of headers) {
-        
-        if (req.headers[h] && req.headers[h] !== m.get(h)) {
-          log.error(
-            'The following header does not match the expected value.',
-            'Actual:', req.headers[h],
-            'Expected:', m.get(h)
-          );
-        }
-        
-      }
-      
-      next();
-    }
-  }
+ 
   
 }

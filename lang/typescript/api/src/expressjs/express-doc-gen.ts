@@ -3,15 +3,18 @@
 import * as path from 'path';
 import * as express from 'express';
 import {BasicRoute, DocGen, DocGenOpts, EntityMap} from '../doc-gen';
-import {Entity, Route, TypeCreatorObject} from "../main";
+import {ExpressRoute, TypeCreatorObject} from "../main";
 import {HTTPMethods, flattenDeep, joinMessages} from "../shared";
 import {RequestHandler} from 'express-serve-static-core';
 import log from "../logger";
 import * as safe from '@oresoftware/safe-stringify';
 import {runInThisContext} from "vm";
 import * as fs from 'fs';
+import {Entity} from "../entity";
+import {Route} from "../route";
 
-type NestedRequestHandler = RequestHandler | Array<RequestHandler> | Array<Array<RequestHandler>>
+export type BasicExpressRoute = ExpressRoute<TypeCreatorObject, TypeCreatorObject>;
+type NestedRequestHandler = RequestHandler | Array<RequestHandler> | Array<Array<RequestHandler> | RequestHandler>
 
 export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> {
   
@@ -28,6 +31,7 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
     this.view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/' /*base*/);
   }
   
+  
   makeAddRoute1(router: any, entityName: string) {
     return (methods: HTTPMethods[], route: string, f: (method: HTTPMethods, route: string, router?: express.Router) => any) => {
       const r = this.addRoute(methods, route);
@@ -38,17 +42,17 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
   }
   
   makeHandler<ReqBody extends TypeCreatorObject = any, ResBody extends TypeCreatorObject = any>(methods: HTTPMethods[], route: string, fn: (r: BasicRoute) => RequestHandler) {
-    return fn(new Route<ReqBody, ResBody>(methods, route));
+    return fn(new ExpressRoute<ReqBody, ResBody>(methods, route));
   }
   
   makeSimpleHandler<ReqBody extends TypeCreatorObject = any, ResBody extends TypeCreatorObject = any>(fn: (r: BasicRoute) => RequestHandler) {
-    return fn(new Route<ReqBody, ResBody>());
+    return fn(new ExpressRoute<ReqBody, ResBody>());
   }
   
-  makeAddRoute(router: any, entityName?: string) {
-    return (methods: HTTPMethods | HTTPMethods[], route: string, fn: (r: BasicRoute) => NestedRequestHandler) => {
+  makeAddRoute(router: any, entities?: Entity | Array<Entity>) {
+    return (methods: HTTPMethods | HTTPMethods[], route: string, fn: ((r: BasicExpressRoute) => NestedRequestHandler)) => {
       const filteredMethods = flattenDeep([methods]).filter(Boolean);
-      const r = this.addRoute(filteredMethods, route, entityName);
+      const r = this.addRoute<BasicExpressRoute>(filteredMethods, route);
       const handlers = flattenDeep([fn(r)]);
       for (const v of methods) {
         (router as any)[v as any](route, ...handlers);
@@ -56,32 +60,53 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
     }
   }
   
-  _makecustomReplacer(cache: Set<any>) {
+  compareHTTPRequestHeaders(types: Array<TypeCreatorObject>): RequestHandler {
     
-    return (key: string, val: any) => {
+    const m = new Map<string, string>();
+    const headers = ['x_tc_req_body_type', 'x_tc_resp_body_type'];
+    
+    for (const t of types) {
       
-      if (val instanceof Route || typeof val.justId === 'function') {
-        log.info('getting route:', val);
-        const v = val.justId();
-        cache.add(v);
-        return v;
+      const metaField = t.TypeCreatorMeta;
+      
+      if (!metaField) {
+        log.error('Missing "TypeCreatorMeta" field.');
+        continue;
       }
       
-      if (val && typeof val === 'object') {
-        if (cache.has(val)) {
-          // Circular reference found, discard key
-          return;
+      const typeField = metaField.type || t.TypeAwarePath;
+      
+      if (!typeField) {
+        log.error('Missing "TypeCreatorMeta" field.');
+        continue;
+      }
+      
+      for (const v of headers) {
+        
+        if (metaField[v]) {
+          m.set(v, typeField);
         }
-        // Store value in our map
-        cache.add(val);
+        
       }
       
-      log.info('the val:', val);
-      
-      return val;
-      
-    };
+    }
     
+    return (req, res, next) => {
+      
+      for (const h of headers) {
+        
+        if (req.headers[h] && req.headers[h] !== m.get(h)) {
+          log.error(
+            'The following header does not match the expected value.',
+            'Actual:', req.headers[h],
+            'Expected:', m.get(h)
+          );
+        }
+        
+      }
+      
+      next();
+    }
   }
   
   serve(): RequestHandler {
