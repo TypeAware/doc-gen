@@ -12,7 +12,7 @@ export class Entity {
     this.url = url || null;
   }
   
-  static from(v: Entity){
+  static from(v: {name:string,type?:string,url?:string}){
     return new Entity(v.name,v.type,v.url);
   }
   
