@@ -1,7 +1,27 @@
 
 <div>
-  top of main
+ <mat-form-field>
+   <mat-select (selectionChange)="onChange($event)">
+     <mat-option [value]=1>one</mat-option>
+     <mat-option [value]=2>two</mat-option>
+     <mat-option [value]=3>three</mat-option>
+     <mat-option [value]=4>four</mat-option>
+     <mat-option >other</mat-option>
+   </mat-select>
+ </mat-form-field>
 </div>
+
+<!--<div>-->
+  <!--<mat-form-field>-->
+    <!--<mat-select [(ngModel)]="regime" name="regime-input" #regimeWidget>-->
+      <!--<mat-option [value]=1>daily</mat-option>-->
+      <!--<mat-option [value]=7>weekly</mat-option>-->
+      <!--<mat-option [value]=30>monthly</mat-option>-->
+      <!--<mat-option [value]=0>bei Bedarf</mat-option>-->
+      <!--<mat-option >other</mat-option>-->
+    <!--</mat-select>-->
+  <!--</mat-form-field>-->
+<!--</div>-->
 
 
 <app-routes>

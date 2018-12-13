@@ -18,8 +18,18 @@
    <script type="text/javascript">
 
      define('app-data',() => {
+       console.log('retrieving app-data...');
+
+       let val = null;
+       try{
+         val = JSON.parse('<%=json%>')
+       }
+       catch(err){
+         val = {routes: [1,2,3,4,5].map(v => ({val:v}))};
+       }
+
        return {
-         value: JSON.parse('<%=json%>')
+         value: val
        }
      });
 

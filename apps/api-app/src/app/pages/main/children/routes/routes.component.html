@@ -3,7 +3,8 @@
   top of routes
 </div>
 
-<app-route></app-route>
+<app-route *ngFor="let r of routes" [ves]="r">
+</app-route>
 
 <div>
   bottom of routes

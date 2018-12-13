@@ -1,7 +1,8 @@
 'use strict';
 
-import { Component, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {MainService} from "./services/main.service";
+import {AppService} from "../../app.service";
 
 @Component({
   selector: 'app-main',
@@ -11,14 +12,25 @@ import {MainService} from "./services/main.service";
 })
 export class MainComponent implements OnInit {
   
-  routes = [1,2,3,4,5];
 
-  constructor(ms: MainService) {
+  ms: MainService;
   
+  constructor(
+    ms: MainService,
+    private ref: ChangeDetectorRef
+  ) {
+  
+    this.ms = ms;
   
   }
 
   ngOnInit() {
   }
-
+  
+  onChange(val: string){
+    console.log('here is the dropdown change:', val);
+    this.ms.updateRoutes();
+  }
+  
+  
 }

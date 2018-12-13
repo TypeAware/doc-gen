@@ -1,7 +1,9 @@
+'use strict';
+
 import { Component } from '@angular/core';
 import {AppService} from "./app.service";
 import {BehaviorSubject} from "rxjs";
-declare const requirejs: any;
+
 
 @Component({
   selector: 'app-root',
@@ -14,14 +16,8 @@ export class AppComponent {
   
   constructor(as: AppService) {
   
-    try{
-      requirejs('app-data', v => {
-      
-      });
-    }
-    catch(err){
+    console.log('In the app.component constructor.');
     
-    }
   
   }
   

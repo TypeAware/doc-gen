@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-route',
@@ -7,7 +7,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RouteComponent implements OnInit {
 
-  constructor() { }
+  @Input() ves: any;  // ves = vessel = container
+  
+  constructor() {
+  
+  }
 
   ngOnInit() {
   }
