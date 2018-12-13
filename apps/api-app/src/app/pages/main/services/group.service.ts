@@ -3,7 +3,9 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class GroupService {
 
   constructor() {
@@ -15,5 +17,7 @@ export class GroupService {
     return Object.values( _.groupBy(list, field));
   }
   
-  
+  ngOnDestroy(){
+    console.log('group service destroyed.');
+  }
 }

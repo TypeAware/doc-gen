@@ -11,7 +11,6 @@ declare const requirejs: any;
 export class AppService {
   
   routes : Array<any> = [];
-  
   rs = new ReplaySubject<any>(1);
   
   constructor() {
@@ -33,6 +32,10 @@ export class AppService {
   }
   
   sendDataDown() {
-    return this.rs.next(this.routes);
+    return this.rs.next(this.routes.slice(0));
+  }
+  
+  ngOnDestroy(){
+    console.log('app service destroyed.');
   }
 }

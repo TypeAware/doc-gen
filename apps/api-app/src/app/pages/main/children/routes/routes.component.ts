@@ -1,8 +1,8 @@
 'use strict';
 
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {MainService} from "../../services/main.service";
-import {take} from "rxjs/operators";
+import {take, takeWhile} from "rxjs/operators";
 import {GroupService} from "../../services/group.service";
 
 @Component({
@@ -10,9 +10,11 @@ import {GroupService} from "../../services/group.service";
   templateUrl: './routes.component.html',
   styleUrls: ['./routes.component.css']
 })
-export class RoutesComponent implements OnInit {
+export class RoutesComponent implements OnInit, OnDestroy {
   
   routes: Array<any> = [];
+  
+  mounted = true;
   
   constructor(
     private ms: MainService,
@@ -24,22 +26,30 @@ export class RoutesComponent implements OnInit {
   
   ngOnInit() {
     
-    this.ms.s.pipe(take(1)).subscribe(v => {
-      console.log('here are the routes:', v);
-      this.updateRoutez(this.gs.groupList('bar',v));
-    });
-    
-    
-    this.ms.rs.subscribe(v => {
+    // this.ms.s.pipe(take(1)).subscribe(v => {
+    //   console.log('here are the routes 1:', v);
+    //   this.updateRoutez(this.gs.groupList('bar',v));
+    // });
+    //
+  
+    const predicate = this.makePredicate();
+    this.ms.s.pipe(takeWhile(predicate)).subscribe(v => {
       this.updateRoutez(this.gs.groupList(v.val, v.list));
     });
   }
   
-  updateRoutez(v: any) {
-    this.routes = (v.routes || v).slice();
-    console.log('roooutes:',this.routes);
+  makePredicate(){
+    return () => this.mounted;
+  }
+  
+  updateRoutez(v: Array<any>) {
+    this.routes = v.slice();
     this.ref.detectChanges();
     this.ref.markForCheck();
   }
   
+  ngOnDestroy(){
+    console.log('routes component destroyed.');
+    this.mounted = false;
+  }
 }

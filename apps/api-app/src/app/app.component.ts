@@ -1,24 +1,21 @@
 'use strict';
 
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {AppService} from "./app.service";
-import {BehaviorSubject} from "rxjs";
-
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers:[AppService]
+  providers: [AppService]
 })
 export class AppComponent {
   title = 'api-app';
   
-  constructor(as: AppService) {
-  
+  constructor(private as: AppService) {
+    
     console.log('In the app.component constructor.');
     
-  
   }
   
 }

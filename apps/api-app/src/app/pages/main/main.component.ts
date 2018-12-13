@@ -1,19 +1,18 @@
 'use strict';
 
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {MainService} from "./services/main.service";
 import {AppService} from "../../app.service";
-import {take} from "rxjs/operators";
+import {take, takeWhile} from "rxjs/operators";
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
-  styleUrls: ['./main.component.css'],
-  providers: [MainService]
+  styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, OnDestroy {
   
-  ms: MainService;
+  mounted = true;
   
   selectionVals = [
     {name: 'FOO', val: 'foo'},
@@ -22,19 +21,27 @@ export class MainComponent implements OnInit {
   ];
   
   constructor(
-    ms: MainService,
+    private as: AppService,
+    private ms: MainService,
     private ref: ChangeDetectorRef
-  ) {
-    
-    this.ms = ms;
-    
-  }
+  ) {}
   
   ngOnInit() {
+  
+    const predicate = this.makePredicate();
+  
+    this.as.rs.pipe(take(1)).subscribe(v => {
+      // this.ms.s.next({list:v, val:'bar'});
+      this.ms.updateRoutes('bar');
+    });
+  }
+  
+  makePredicate(){
+    return () => this.mounted;
   }
   
   onChange(val: any) {
-    console.log('here is the dropdown change:', val);
+    
     if (!(val && typeof val.value === 'string')) {
       return alert('Value is not recognized:' + val);
     }
@@ -43,4 +50,8 @@ export class MainComponent implements OnInit {
     
   }
   
+  ngOnDestroy(){
+    console.log('main component destroyed.');
+    this.mounted = false;
+  }
 }
