@@ -3,6 +3,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {MainService} from "./services/main.service";
 import {AppService} from "../../app.service";
+import {take} from "rxjs/operators";
 
 @Component({
   selector: 'app-main',
@@ -34,10 +35,12 @@ export class MainComponent implements OnInit {
   
   onChange(val: any) {
     console.log('here is the dropdown change:', val);
-    if(!(val && typeof val.value === 'string')){
+    if (!(val && typeof val.value === 'string')) {
       return alert('Value is not recognized:' + val);
     }
+    
     this.ms.updateRoutes(val.value);
+    
   }
   
 }

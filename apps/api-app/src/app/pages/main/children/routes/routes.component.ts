@@ -24,17 +24,18 @@ export class RoutesComponent implements OnInit {
   
   ngOnInit() {
     
-    this.ms.rs.pipe(take(1)).subscribe(v => {
+    this.ms.s.pipe(take(1)).subscribe(v => {
       console.log('here are the routes:', v);
-      this.updateRoutes(this.gs.groupList('bar',v));
+      this.updateRoutez(this.gs.groupList('bar',v));
     });
     
-    this.ms.s.subscribe((v: string) => {
-      this.updateRoutes(this.gs.groupList(v, this.routes));
+    
+    this.ms.rs.subscribe(v => {
+      this.updateRoutez(this.gs.groupList(v.val, v.list));
     });
   }
   
-  updateRoutes(v: any) {
+  updateRoutez(v: any) {
     this.routes = (v.routes || v).slice();
     console.log('roooutes:',this.routes);
     this.ref.detectChanges();
