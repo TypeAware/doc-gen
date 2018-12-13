@@ -86,7 +86,7 @@ export abstract class Route<ReqBody extends TypeCreatorObject = any, ResBody ext
   // }
   
   // get requestBodyType(){
-  //   this.setRequestBodyType(s);
+  //   this.setRequestBodyType(rs);
   // }
   
   justId() {
@@ -96,12 +96,12 @@ export abstract class Route<ReqBody extends TypeCreatorObject = any, ResBody ext
   }
   
   addToConsumes(v: string | Array<string>){
-    // this call makes sure it's a unique list
+    // this call makes sure it'rs a unique list
     this.consumes = Array.from(new Set(flattenDeep([this.consumes,v])));
   }
   
   addToProduces(v: string | Array<string>){
-    // this call makes sure it's a unique list
+    // this call makes sure it'rs a unique list
     this.produces = Array.from(new Set(flattenDeep([this.produces,v])));
   }
   

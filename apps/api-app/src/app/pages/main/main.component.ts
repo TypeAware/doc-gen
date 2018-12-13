@@ -4,13 +4,14 @@ import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {MainService} from "./services/main.service";
 import {AppService} from "../../app.service";
 import {take, takeWhile} from "rxjs/operators";
+import {CompBase} from "../../comp.base";
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit, OnDestroy {
+export class MainComponent extends CompBase implements OnInit, OnDestroy {
   
   mounted = true;
   
@@ -24,20 +25,18 @@ export class MainComponent implements OnInit, OnDestroy {
     private as: AppService,
     private ms: MainService,
     private ref: ChangeDetectorRef
-  ) {}
+  ) {
+    super();
+  }
   
   ngOnInit() {
   
     const predicate = this.makePredicate();
   
-    this.as.rs.pipe(take(1)).subscribe(v => {
-      // this.ms.s.next({list:v, val:'bar'});
+    this.as.rs.pipe(take(1), takeWhile(predicate)).subscribe(v => {
+      // this.ms.rs.next({list:v, val:'bar'});
       this.ms.updateRoutes('bar');
     });
-  }
-  
-  makePredicate(){
-    return () => this.mounted;
   }
   
   onChange(val: any) {
@@ -51,7 +50,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
   
   ngOnDestroy(){
+    super.ngOnDestroy();
     console.log('main component destroyed.');
-    this.mounted = false;
   }
 }
