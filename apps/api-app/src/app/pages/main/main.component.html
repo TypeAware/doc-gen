@@ -2,11 +2,7 @@
 <div>
  <mat-form-field>
    <mat-select (selectionChange)="onChange($event)">
-     <mat-option [value]=1>one</mat-option>
-     <mat-option [value]=2>two</mat-option>
-     <mat-option [value]=3>three</mat-option>
-     <mat-option [value]=4>four</mat-option>
-     <mat-option >other</mat-option>
+     <mat-option *ngFor="let v of selectionVals" [value]="v.val">{{v.name}}</mat-option>
    </mat-select>
  </mat-form-field>
 </div>

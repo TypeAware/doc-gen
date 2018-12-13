@@ -20,12 +20,20 @@
      define('app-data',() => {
        console.log('retrieving app-data...');
 
+       const getRandom = (list) => {
+         return list[Math.floor(Math.random()*list.length)];
+       };
+
+       const bar = ['star','dar','pear'];
+       const czar = ['king','queen','monarch'];
+       const foo = ['fee','fi','fo','fum'];
+
        let val = null;
        try{
          val = JSON.parse('<%=json%>')
        }
        catch(err){
-         val = {routes: [1,2,3,4,5].map(v => ({val:v}))};
+         val = {routes: [1,2,3,4,5].map(v => ({val:v, foo: getRandom(foo), bar:getRandom(bar),czar: getRandom(czar)}))};
        }
 
        return {

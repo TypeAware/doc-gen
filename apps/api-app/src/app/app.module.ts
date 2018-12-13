@@ -10,9 +10,11 @@ import { NavComponent } from './nav/nav.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { RoutesComponent } from './pages/main/children/routes/routes.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatFormFieldModule, MatSelectModule} from "@angular/material";
+import {MatCardModule, MatExpansionModule, MatFormFieldModule, MatSelectModule} from "@angular/material";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {GroupService} from "./pages/main/services/group.service";
+import { RouteGroupComponent } from './pages/main/children/route-group/route-group.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,8 @@ import {FormsModule} from "@angular/forms";
     AboutComponent,
     NavComponent,
     ContactComponent,
-    RoutesComponent
+    RoutesComponent,
+    RouteGroupComponent
   ],
   imports: [
     BrowserModule,
@@ -30,10 +33,12 @@ import {FormsModule} from "@angular/forms";
     BrowserAnimationsModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatExpansionModule,
+    MatCardModule,
     FormsModule,
     CommonModule
   ],
-  providers: [],
+  providers: [GroupService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

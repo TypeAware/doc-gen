@@ -6,8 +6,8 @@ import {Component, Input, OnInit} from '@angular/core';
   styleUrls: ['./route.component.css']
 })
 export class RouteComponent implements OnInit {
-
-  @Input() ves: any;  // ves = vessel = container
+  
+  @Input() ves: any;
   
   constructor() {
   

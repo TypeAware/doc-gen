@@ -13,3 +13,4 @@ rs.next(3);
 rs.pipe(takeLast(0)).subscribe(v => {
   console.log({v});
 });
+

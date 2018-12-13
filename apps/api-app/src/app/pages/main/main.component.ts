@@ -12,25 +12,32 @@ import {AppService} from "../../app.service";
 })
 export class MainComponent implements OnInit {
   
-
   ms: MainService;
+  
+  selectionVals = [
+    {name: 'FOO', val: 'foo'},
+    {name: 'BAR', val: 'bar'},
+    {name: 'CZAr', val: 'czar'},
+  ];
   
   constructor(
     ms: MainService,
     private ref: ChangeDetectorRef
   ) {
-  
+    
     this.ms = ms;
-  
+    
   }
-
+  
   ngOnInit() {
   }
   
-  onChange(val: string){
+  onChange(val: any) {
     console.log('here is the dropdown change:', val);
-    this.ms.updateRoutes();
+    if(!(val && typeof val.value === 'string')){
+      return alert('Value is not recognized:' + val);
+    }
+    this.ms.updateRoutes(val.value);
   }
-  
   
 }
