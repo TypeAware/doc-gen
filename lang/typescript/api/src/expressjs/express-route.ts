@@ -19,7 +19,7 @@ export class ExpressRoute<ReqBody extends TypeCreatorObject = any, ResBody exten
         }
       }
       
-      res.setHeader('x_tc_resp_body_type', this.types.responseBodyType);
+      res.setHeader('x_tc_resp_body_type', this.typeMap.responseBodyType);
       
       if(isGet){
         res.status(202);
@@ -30,7 +30,7 @@ export class ExpressRoute<ReqBody extends TypeCreatorObject = any, ResBody exten
       
       res.json({
         responseBodyTypeURL: 'http://www.types.com',
-        responseBodyType: this.types.responseBodyType,
+        responseBodyType: this.typeMap.responseBodyType,
       });
       
     }

@@ -13,7 +13,7 @@ const app = express();
 
 const d = new ExpressDocGen({
   basePath: __dirname,
-  typesRoot: '/home/oleg/codes/typeaware/types-depot/builds/json/entities.json'
+  typesRoot: '/home/oleg/codes/typeaware/typeMap-depot/builds/json/entities.json'
 });
 
 Object.setPrototypeOf({}, ExpressRoute.prototype);

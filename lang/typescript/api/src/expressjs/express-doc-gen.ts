@@ -28,7 +28,9 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
     // const base = '/';
     const viewPath = path.resolve(process.cwd() + `/${base}/index-final.html`);  // index-final.html
     const realPath = fs.realpathSync(viewPath);
-    this.view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/' /*base*/);
+    // this.view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/'); // <%=
+  
+    this.view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/');
   }
   
   

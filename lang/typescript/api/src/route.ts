@@ -4,7 +4,7 @@ import {flattenDeep, HTTPMethods} from "./shared";
 import {DocGen} from "./doc-gen";
 import * as shortid from "shortid";
 import {RequestHandler} from "express";
-import { TypeCreatorObject} from "./main";
+import {TypeCreatorObject} from "./main";
 import {Entities} from "../../.fixtures/types";
 import {Entity} from "./entity";
 
@@ -22,8 +22,6 @@ export interface Request {
     [key: string]: any
   }
 }
-
-
 
 export interface Response {
   headers?: Headers;
@@ -64,10 +62,15 @@ export abstract class Route<ReqBody extends TypeCreatorObject = any, ResBody ext
   requestBodyClass: ReqBody;
   responseBodyClass: ResBody;
   docParents: Array<DocGen<any>> = [];  // parents
+  consumes = ['application/json'];
+  produces = ['application/json'];
+  deprecated = false;
   
-  types: {
-    responseBodyType: string;
-    requestBodyType: string;
+  types: Array<string> = [];
+  
+  typeMap = {
+    responseBodyType: null as string,
+    requestBodyType: null as string
   };
   
   constructor(methods?: HTTPMethods[], path?: string, entities?: Entity | Array<Entity>) {
@@ -76,14 +79,10 @@ export abstract class Route<ReqBody extends TypeCreatorObject = any, ResBody ext
     this.path = path || null;
     this.entities = flattenDeep([entities]).filter(Boolean);
     this.methods = flattenDeep([methods]).filter(Boolean);
-    this.types = {
-      responseBodyType: '',
-      requestBodyType: ''
-    }
   }
   
   // get responseBodyType() : string{
-  //   return this.types.responseBodyType;
+  //   return this.typeMap.responseBodyType;
   // }
   
   // get requestBodyType(){
@@ -96,6 +95,26 @@ export abstract class Route<ReqBody extends TypeCreatorObject = any, ResBody ext
     }
   }
   
+  addToConsumes(v: string | Array<string>){
+    // this call makes sure it's a unique list
+    this.consumes = Array.from(new Set(flattenDeep([this.consumes,v])));
+  }
+  
+  addToProduces(v: string | Array<string>){
+    // this call makes sure it's a unique list
+    this.produces = Array.from(new Set(flattenDeep([this.produces,v])));
+  }
+  
+  setConsumes(v: string | Array<string>){
+    this.consumes = Array.from(new Set(flattenDeep([v])));
+    return this;
+  }
+  
+  setProduces(v: string | Array<string>){
+    this.produces = Array.from(new Set(flattenDeep([v])));
+    return this;
+  }
+  
   toJSON(): any {
     
     // return this;
@@ -106,7 +125,7 @@ export abstract class Route<ReqBody extends TypeCreatorObject = any, ResBody ext
       description: this.description || '(no description)',
       methods: this.methods,
       entities: this.entities,
-      types: this.types
+      types: this.typeMap
     }
   }
   
@@ -139,7 +158,7 @@ export abstract class Route<ReqBody extends TypeCreatorObject = any, ResBody ext
     const respBodyClass = s && s.TypeAwarePath;
     
     if (respBodyClass) {
-      this.types.responseBodyType = respBodyClass;
+      this.typeMap.responseBodyType = respBodyClass;
       for (const d of this.docParents) {
         d._addToTypeMap(respBodyClass, this);
         if (!d.internal.routes.includes(this)) {
@@ -157,7 +176,7 @@ export abstract class Route<ReqBody extends TypeCreatorObject = any, ResBody ext
     const reqBodyClass = s && s.TypeAwarePath;
     
     if (reqBodyClass) {
-      this.types.requestBodyType = reqBodyClass;
+      this.typeMap.requestBodyType = reqBodyClass;
       for (const d of this.docParents) {
         d._addToTypeMap(reqBodyClass, this);
         if (!d.internal.routes.includes(this)) {
@@ -169,7 +188,5 @@ export abstract class Route<ReqBody extends TypeCreatorObject = any, ResBody ext
     
     return s;
   }
-  
-
   
 }

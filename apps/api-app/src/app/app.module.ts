@@ -8,6 +8,8 @@ import { RouteComponent } from './pages/main/children/route/route.component';
 import { AboutComponent } from './pages/about/about.component';
 import { NavComponent } from './nav/nav.component';
 import { ContactComponent } from './pages/contact/contact.component';
+import { RoutesComponent } from './pages/main/children/routes/routes.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -16,11 +18,13 @@ import { ContactComponent } from './pages/contact/contact.component';
     RouteComponent,
     AboutComponent,
     NavComponent,
-    ContactComponent
+    ContactComponent,
+    RoutesComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
