@@ -13,10 +13,10 @@ const app = express();
 
 const d = new ExpressDocGen({
   basePath: __dirname,
-  typesRoot: '/home/oleg/codes/typeaware/typeMap-depot/builds/json/entities.json'
+  typesRoot: '/home/oleg/codes/typeaware/types-depot/builds/json/entities.json'
 });
 
-Object.setPrototypeOf({}, ExpressRoute.prototype);
+// Object.setPrototypeOf({}, ExpressRoute.prototype);
 
 d.addEntity(Entity.from({name: 'rabbit'}))
   .addEntity(Entity.from({name: 'stank'}));
@@ -62,7 +62,7 @@ export const register = (v: string, d: ExpressDocGen<any>) => {
   
   app.use(router);
   
-  app.use('/docs', d.serve());
+  app.use('/docs', d._serveDev());
   
   app.use(function (req, res, next) {
     res.json({error: 'fuk'});

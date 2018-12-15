@@ -18,7 +18,8 @@ type NestedRequestHandler = RequestHandler | Array<RequestHandler> | Array<Array
 
 export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> {
   
-  view: string;
+  _view: string;
+  _viewDev: string;
   
   constructor(v: DocGenOpts) {
     super(v);
@@ -26,13 +27,26 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
     const base = 'node_modules/@typeaware/api-app/dist/api-app/';
     // const viewPath = path.resolve(process.cwd() + `/${base}/index.html`);
     // const base = '/';
-    const viewPath = path.resolve(process.cwd() + `/${base}/index-final.html`);  // index-final.html
-    const realPath = fs.realpathSync(viewPath);
-    // this.view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/'); // <%=
-  
-    this.view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/');
+    
+    try {
+      const viewPath = path.resolve(process.cwd() + `/${base}/index-final.html`);  // index-final.html
+      const realPath = fs.realpathSync(viewPath);
+      this._view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/');
+    }
+    catch (err) {
+      console.error(err.message);
+    }
+    
+    try {
+      const viewPath = path.resolve(process.cwd() + `/${base}/index.html`);  // index-final.html
+      const realPath = fs.realpathSync(viewPath);
+      this._viewDev = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/');
+    }
+    catch (err) {
+      console.error(err.message);
+    }
+    
   }
-  
   
   makeAddRoute1(router: any, entityName: string) {
     return (methods: HTTPMethods[], route: string, f: (method: HTTPMethods, route: string, router?: express.Router) => any) => {
@@ -111,19 +125,29 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
     }
   }
   
+  _serveDev(): RequestHandler {
+    
+    return (req, res, next) => {
+      
+      res.setHeader('Content-Type', 'text/html'); //or text/plain
+      const v = this.getJSON();
+      const str = safe.stringifyDeep(v);
+      const strm = fs.createWriteStream(process.cwd() + '/json.dev.json');
+      strm.end(str + '\n');
+      res.end(this._viewDev.replace('<%=json%>', str));
+    };
+  }
+  
   serve(): RequestHandler {
     
     return (req, res, next) => {
       
       res.setHeader('Content-Type', 'text/html'); //or text/plain
       const v = this.getJSON();
-      // const str = JSON.stringify(v);
-      // console.log('dooooo');
       const str = safe.stringifyDeep(v);
-      console.log({str});
       const strm = fs.createWriteStream(process.cwd() + '/json.json');
       strm.end(str + '\n');
-      res.end(this.view.replace('<%=json%>', str));
+      res.end(this._view.replace('<%=json%>', str));
     };
   }
   
