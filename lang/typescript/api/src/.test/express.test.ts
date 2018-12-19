@@ -8,12 +8,15 @@ import {ExpressRoute} from "../expressjs/express-route";
 import {Entity} from '../entity';
 import {Entities} from '../../../.fixtures/types';
 import Foo = Entities.Foo;
+import { pathToFileURL } from 'url';
+import * as path from 'path';
 
 const app = express();
 
 const d = new ExpressDocGen({
   basePath: __dirname,
-  typesRoot: '/home/oleg/codes/typeaware/types-depot/builds/json/entities.json'
+  typesRoot:path.resolve(process.env.HOME + '/WebstormProjects/typeaware/types-depot/builds/json/entities.json')
+  // typesRoot: '/home/oleg/codes/typeaware/types-depot/builds/json/entities.json'
 });
 
 // Object.setPrototypeOf({}, ExpressRoute.prototype);

@@ -7,7 +7,7 @@ import {GroupService} from "../../services/group.service";
 import {CompBase} from "../../../../comp.base";
 
 @Component({
-  selector: 'app-routes',
+  selector: 'app-main-routes-list',
   templateUrl: './routes.component.html',
   styleUrls: ['./routes.component.css']
 })
