@@ -1,3 +1,4 @@
+'use strict';
 import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
@@ -8,7 +9,6 @@ import {Component, Input, OnInit} from '@angular/core';
 export class RouteGroupComponent implements OnInit {
   
   @Input() list : Array<any> = [];
-  
   @Input() ves: any;  // ves = vessel = container
   
   constructor() { }

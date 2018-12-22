@@ -19,7 +19,6 @@ type NestedRequestHandler = RequestHandler | Array<RequestHandler> | Array<Array
 export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> {
   
   _view: string;
-  _viewDev: string;
   
   constructor(v: DocGenOpts) {
     super(v);
@@ -29,18 +28,9 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
     // const base = '/';
     
     try {
-      const viewPath = path.resolve(process.cwd() + `/${base}/index-final.html`);  // index-final.html
-      const realPath = fs.realpathSync(viewPath);
-      this._view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/');
-    }
-    catch (err) {
-      console.error(err.message);
-    }
-    
-    try {
       const viewPath = path.resolve(process.cwd() + `/${base}/index.html`);  // index-final.html
       const realPath = fs.realpathSync(viewPath);
-      this._viewDev = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/');
+      this._view = fs.readFileSync(realPath, 'utf8').replace('<%=base%>', '/');
     }
     catch (err) {
       console.error(err.message);
@@ -125,26 +115,14 @@ export class ExpressDocGen<Entities extends EntityMap> extends DocGen<Entities> 
     }
   }
   
-  _serveDev(): RequestHandler {
-    
-    return (req, res, next) => {
-      
-      res.setHeader('Content-Type', 'text/html'); //or text/plain
-      const v = this.getJSON();
-      const str = safe.stringifyDeep(v);
-      const strm = fs.createWriteStream(process.cwd() + '/json.dev.json');
-      strm.end(str + '\n');
-      res.end(this._viewDev.replace('<%=json%>', str));
-    };
-  }
-  
   serve(): RequestHandler {
     
     return (req, res, next) => {
       
       res.setHeader('Content-Type', 'text/html'); //or text/plain
       const v = this.getJSON();
-      const str = safe.stringifyDeep(v);
+      // const str = safe.stringifyDeep(v);
+      const str = JSON.stringify(v, null, 2);
       const strm = fs.createWriteStream(process.cwd() + '/json.json');
       strm.end(str + '\n');
       res.end(this._view.replace('<%=json%>', str));

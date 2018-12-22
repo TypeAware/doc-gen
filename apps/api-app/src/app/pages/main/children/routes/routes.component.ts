@@ -1,5 +1,4 @@
 'use strict';
-
 import {ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {MainService} from "../../services/main.service";
 import {take, takeWhile} from "rxjs/operators";

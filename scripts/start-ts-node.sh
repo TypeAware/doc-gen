@@ -7,6 +7,6 @@ set -e;
 
     cd lang/typescript/api
 
-    ts-node src/.test/express.test.ts
+    node dist/test/express.test.ts
 )
 

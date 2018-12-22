@@ -13,9 +13,15 @@ import * as path from 'path';
 
 const app = express();
 
+if(!process.env.doc_gen_root){
+  throw 'process.env.doc_gen_root was not defined.';
+}
+
 const d = new ExpressDocGen({
   basePath: __dirname,
-  typesRoot:path.resolve(process.env.HOME + '/WebstormProjects/typeaware/types-depot/builds/json/entities.json')
+  typesRoot:path.resolve(process.env.doc_gen_root + '/types-depot/builds/json/entities.json')
+  
+  // typesRoot:path.resolve(process.env.HOME + '/WebstormProjects/typeaware/types-depot/builds/json/entities.json')
   // typesRoot: '/home/oleg/codes/typeaware/types-depot/builds/json/entities.json'
 });
 
@@ -65,7 +71,7 @@ export const register = (v: string, d: ExpressDocGen<any>) => {
   
   app.use(router);
   
-  app.use('/docs', d._serveDev());
+  app.use('/docs', d.serve());
   
   app.use(function (req, res, next) {
     res.json({error: 'fuk'});
