@@ -4,3 +4,7 @@ node_modules
 *.log
 *.tgz
 dist
+tmp
+temp
+tmp/worktrees
+temp/worktrees
